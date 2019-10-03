@@ -6,5 +6,5 @@ import com.google.gson.annotations.SerializedName
 class MediaList {
 
     @SerializedName("objects")
-    private lateinit var mMediaItems: List<MediaItem?>
+    lateinit var mMediaItems: List<MediaItem?>
 }

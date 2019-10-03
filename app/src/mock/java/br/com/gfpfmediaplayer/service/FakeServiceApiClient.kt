@@ -43,7 +43,7 @@ object FakeServiceApiClient {
     }
 
 
-    fun loadAllGHUsers(): ArrayMap<Int, MediaItem> {
+    fun loadAllMediaItem(): ArrayMap<Int, MediaItem> {
         return FAKE_MEDIA_LIST_SERVICE_DATA
     }
 

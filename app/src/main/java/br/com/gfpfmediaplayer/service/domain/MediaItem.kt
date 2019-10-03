@@ -8,14 +8,14 @@ class MediaItem(id: Int?, name: String?, video: String?, thumbnail: String?, aud
     var mId = id
 
     @SerializedName("name")
-    private var mName = name
+    var mName = name
 
     @SerializedName("bg")
-    private var mVideo = video
+    var mVideo = video
 
     @SerializedName("im")
-    private var mThumbnail = thumbnail
+    var mThumbnail = thumbnail
 
     @SerializedName("sg")
-    private var mAudio = audio
+    var mAudio = audio
 }

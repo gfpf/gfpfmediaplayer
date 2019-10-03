@@ -5,22 +5,22 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ProgressBar
-import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
-import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.LinearLayoutManager
 import br.com.gfpfmediaplayer.R
 import br.com.gfpfmediaplayer.service.domain.MediaItem
 import br.com.gfpfmediaplayer.service.domain.MediaList
 import br.com.gfpfmediaplayer.service.domain.MediaListContract
+import br.com.gfpfmediaplayer.view.CardItemDecoration
+import br.com.gfpfmediaplayer.view.MediaListRecyclerViewAdapter
+import kotlinx.android.synthetic.main.fragment_media_list.*
 
-class MediaListFragment : Fragment(), MediaListContract.View {
+class MediaListFragment : Fragment()
+    , MediaListContract.View
+    , MediaListRecyclerViewAdapter.RecyclerViewClickListener {
 
-    private var recyclerView: RecyclerView? = null
-    private var results: TextView? = null
-    private var progressBar: ProgressBar? = null
-
+    private var mAdapter: MediaListRecyclerViewAdapter? = null
     private lateinit var mMediaListViewModel: MediaListViewModel
 
     override fun onCreateView(
@@ -28,24 +28,44 @@ class MediaListFragment : Fragment(), MediaListContract.View {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        return inflater.inflate(R.layout.fragment_media_list, container, false)
+    }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        init()
+        doInitialLoad()
+    }
+
+    private fun init() {
         mMediaListViewModel =
             ViewModelProviders.of(this).get(MediaListViewModel::class.java)
 
-        val root = inflater.inflate(R.layout.fragment_media_list, container, false)
-        recyclerView = root.findViewById(R.id.recycler_view)
-        results = root.findViewById(R.id.result_label)
-        progressBar = root.findViewById(R.id.progress_bar)
+        // Set up the RecyclerView
+        recycler_view?.setHasFixedSize(true)
+        //recycler_view.itemAnimator =
 
-        doInitialLoad()
+        val layoutManager = LinearLayoutManager(context)
+        recycler_view?.layoutManager = layoutManager
 
-        return root
+        val smallPadding = resources.getDimensionPixelSize(R.dimen.margin_16)
+        val itemDecoration = CardItemDecoration(smallPadding, smallPadding)
+        recycler_view?.addItemDecoration(itemDecoration)
+
+        //Adapter
+        if (mAdapter == null) {
+            mAdapter = MediaListRecyclerViewAdapter(this)
+        } else {
+            result_label?.visibility = View.GONE
+            recycler_view?.visibility = View.VISIBLE
+        }
+        recycler_view?.adapter = mAdapter
     }
 
     @SuppressLint("CheckResult")
     private fun doInitialLoad() {
-        //if (savedInstanceState == null) {
-        //Load all users
+
         setProgressIndicator(true)
         mMediaListViewModel.loadAllMediaItem()?.subscribe({ result ->
             //Result
@@ -62,20 +82,24 @@ class MediaListFragment : Fragment(), MediaListContract.View {
     override fun showMediaListUI(mediaList: MediaList?, isAppend: Boolean) {
         setProgressIndicator(false)
 
-        /*if (items == null || items.isEmpty()) {
-            resultsLabel.setVisibility(View.VISIBLE)
-            recyclerView.setVisibility(View.GONE)
+        if (mediaList == null || mediaList.mMediaItems.isEmpty()) {
+            result_label?.visibility = View.VISIBLE
+            recycler_view?.visibility = View.GONE
         } else {
-            resultsLabel.setVisibility(View.GONE)
-            recyclerView.setVisibility(View.VISIBLE)
+            result_label?.visibility = View.GONE
+            recycler_view?.visibility = View.VISIBLE
 
             if (isAppend) {
-                mAdapter.appendData(items)
+                mAdapter?.appendData(mediaList.mMediaItems as MutableList<MediaItem>)
 
             } else {
-                mAdapter.replaceData(items)
+                mAdapter?.replaceData(mediaList.mMediaItems as MutableList<MediaItem>)
             }
-        }*/
+        }
+    }
+
+    override fun recyclerViewListClicked(v: View, position: Int) {
+
     }
 
     override fun showMediaItemDetailUI(requestedMedia: MediaItem) {
@@ -86,10 +110,10 @@ class MediaListFragment : Fragment(), MediaListContract.View {
 
     override fun setProgressIndicator(active: Boolean) {
         if (isAdded && active) {
-            progressBar?.visibility = View.VISIBLE
+            progress_bar?.visibility = View.VISIBLE
 
         } else {
-            progressBar?.visibility = View.GONE
+            progress_bar?.visibility = View.GONE
         }
     }
 }
