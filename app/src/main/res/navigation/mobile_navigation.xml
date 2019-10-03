@@ -12,10 +12,10 @@
         tools:layout="@layout/fragment_home" />
 
     <fragment
-        android:id="@+id/navigation_dashboard"
-        android:name="br.com.gfpfmediaplayer.ui.dashboard.DashboardFragment"
-        android:label="@string/title_dashboard"
-        tools:layout="@layout/fragment_dashboard" />
+        android:id="@+id/navigation_media_list"
+        android:name="br.com.gfpfmediaplayer.ui.media.MediaListFragment"
+        android:label="@string/title_media_list"
+        tools:layout="@layout/fragment_media_list" />
 
     <fragment
         android:id="@+id/navigation_notifications"
